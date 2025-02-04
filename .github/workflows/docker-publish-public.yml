@@ -45,20 +45,3 @@ jobs:
                   push: true
                   tags: ${{ steps.meta.outputs.tags }}
                   labels: ${{ steps.meta.outputs.labels }}
-
-            - name: Change package visibility to public
-              run: |
-                  REPO_NAME=$(echo "${{ github.repository }}" | cut -d'/' -f2 | tr '[:upper:]' '[:lower:]')
-                  response=$(curl -X PATCH \
-                    -H "Accept: application/vnd.github.v3+json" \
-                    -H "Authorization: token ${{ secrets.AUTH_TOKEN }}" \
-                    "https://api.github.com/user/packages/container/${REPO_NAME}/visibility" \
-                    -d '{"visibility":"public"}' \
-                    -w "\n%{http_code}" \
-                    -s)
-
-                  status_code=$(echo "$response" | tail -n1)
-                  if [ "$status_code" -ne 200 ]; then
-                    echo "Failed to change package visibility. Status code: $status_code"
-                    exit 1
-                  fi
