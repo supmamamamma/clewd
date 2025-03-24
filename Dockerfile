@@ -1,17 +1,18 @@
-# Use the official Node.js image as the base image
-FROM node:20.4
+# 使用 alpine 版本作为基础镜像
+FROM node:20.4-alpine
 
-# Set the working directory in the container
+# 设置工作目录
 WORKDIR /app
 
-# Copy the package.json and package-lock.json files to the container
+# 复制 package.json 和 package-lock.json
 COPY package*.json ./
 
-# Install the dependencies
-RUN npm install --no-audit --fund false
+# 只安装生产依赖并清理缓存
+RUN npm install --production --no-audit --fund false && \
+    npm cache clean --force
 
-# Copy the rest of the files to the container
+# 复制应用程序代码
 COPY . .
 
-# Start the application
+# 启动应用
 CMD ["node", "clewd.js"]
